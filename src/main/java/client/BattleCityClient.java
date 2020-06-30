@@ -1,8 +1,5 @@
 package client;
 
-import client.message.ReceiveProtocol;
-import client.message.SendProtocol;
-
 import java.io.IOException;
 import java.net.Socket;
 
@@ -14,10 +11,7 @@ public class BattleCityClient {
         try {
             Socket socket = new Socket(HOST_NAME, PORT_NUMBER);
 
-            new SendProtocol(socket).start();
-            new ReceiveProtocol(socket).start();
-            new Game().start();// New graphic instance
-
+            new Game(socket).start();// New graphic instance
         } catch (IOException e) {
             e.printStackTrace();
         }

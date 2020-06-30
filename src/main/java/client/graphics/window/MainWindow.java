@@ -1,22 +1,31 @@
 package client.graphics.window;
 
 import client.graphics.tank.Tank;
-
-import javax.swing.*;
+import client.message.SendProtocol;
 
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
-import java.awt.geom.Point2D;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.net.Socket;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+
 
 public class MainWindow extends JFrame implements ActionListener, KeyListener {
-    private final Point2D WINDOW_SIZE = new Point2D.Double(500, 500);
-    private final int SPEED = 2;
+    private final Socket SOCKET;
+    private final Dimension WINDOW_SIZE = new Dimension(500, 500);
     private JLabel tankContainer;
     private Tank newTank;
     private JButton startButton;
+
+    public MainWindow(Socket socket){
+        this.SOCKET = socket;
+    }
 
     public void start() {
         setProperties();
@@ -28,8 +37,8 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         Toolkit screen = Toolkit.getDefaultToolkit();
         Dimension screenSize = screen.getScreenSize();
         setTitle("Battle City");
-        setSize((int) WINDOW_SIZE.getX(), (int) WINDOW_SIZE.getY());
-        setLocation((screenSize.width - 500)/2, (screenSize.height - 500)/2 + 1);
+        setSize(WINDOW_SIZE.width, WINDOW_SIZE.height);
+        setLocation((screenSize.width - WINDOW_SIZE.width)/2, (screenSize.height - WINDOW_SIZE.height)/2 + 1);
         addKeyListener(this);
         setFocusable(true);
         setResizable(false);
@@ -39,12 +48,14 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     }
 
     private void initStartView() {
+        Dimension ButtonSize = new Dimension(100, 30);
         startButton = new JButton("Start");
         startButton.setBounds(
-                (int) (WINDOW_SIZE.getX() - 100) / 2 + 1,
-                (int) WINDOW_SIZE.getY() / 2,
-                100,
-                30);
+                (WINDOW_SIZE.width - ButtonSize.width)/2 + 1,
+                WINDOW_SIZE.height / 2,
+                ButtonSize.width,
+                ButtonSize.height
+        );
         add(startButton);
         startButton.addActionListener(this);
     }
@@ -60,53 +71,69 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         switch(keyCode) {
             case(java.awt.event.KeyEvent.VK_UP):
             case(java.awt.event.KeyEvent.VK_W):
-                up();
+                movement("up");
                 break;
             case(java.awt.event.KeyEvent.VK_RIGHT):
             case(java.awt.event.KeyEvent.VK_D):
-                right();
+                movement("right");
                 break;
             case(java.awt.event.KeyEvent.VK_DOWN):
             case(java.awt.event.KeyEvent.VK_S):
-                down();
+                movement("down");
                 break;
             case(java.awt.event.KeyEvent.VK_LEFT):
             case(java.awt.event.KeyEvent.VK_A):
-                left();
+                movement("left");
         }
     }
 
-    private void up(){
-        if(tankContainer.getY() > 0) {
-            tankContainer.setLocation(tankContainer.getX(), tankContainer.getY() - SPEED);
-            handleOrientation("up");
+    private void movement(String orientation) {
+        Point newPosition;
+        int SPEED = 3;
+        if(orientation.equals("up") && tankContainer.getY() > 0) {
+            newPosition = new Point(tankContainer.getX(), tankContainer.getY() - SPEED);
+            sendMessage(newPosition, orientation);
+        } else if(orientation.equals("right") &&
+                tankContainer.getX() + tankContainer.getWidth() < getContentPane().getWidth()) {
+            newPosition = new Point(tankContainer.getX() + SPEED, tankContainer.getY());
+            sendMessage(newPosition, orientation);
+        } else if(orientation.equals("down") &&
+                tankContainer.getY() + tankContainer.getHeight() < getContentPane().getHeight()) {
+            newPosition = new Point(tankContainer.getX(), tankContainer.getY() + SPEED);
+            sendMessage(newPosition, orientation);
+        } else if(orientation.equals("left") && tankContainer.getX() > 0) {
+            newPosition = new Point(tankContainer.getX() - SPEED, tankContainer.getY());
+            sendMessage(newPosition, orientation);
         }
     }
 
-    private void right() {
-        if(tankContainer.getX() + tankContainer.getWidth() < getContentPane().getWidth()){
-            tankContainer.setLocation(tankContainer.getX() + SPEED, tankContainer.getY());
-            handleOrientation("right");
-        }
-    }
-
-    private void down() {
-        if(tankContainer.getY() + tankContainer.getHeight() < getContentPane().getHeight()) {
-            tankContainer.setLocation(tankContainer.getX(), tankContainer.getY() + SPEED);
-            handleOrientation("down");
-        }
-    }
-
-    private void left() {
-        if(tankContainer.getX() > 0) {
-            tankContainer.setLocation(tankContainer.getX() - SPEED, tankContainer.getY());
-            handleOrientation("left");
-        }
-    }
-
-    private void handleOrientation(String orientation) {
+    private void setOrientation(String orientation) {
         newTank.setImage(orientation);
         tankContainer.setIcon(newTank.getImage());
+    }
+
+    public void setTankLocation(String newStringPositionAndOrientation) {
+        /*
+        * info:
+        * - info[0]: X position
+        * - info[1]: Y position
+        * - info[2]: orientation
+        *
+        */
+        String[] info = newStringPositionAndOrientation.split(" ");
+        Point newPosition = new Point(Integer.parseInt(info[0]), Integer.parseInt(info[1]));
+        tankContainer.setLocation(newPosition);
+        setOrientation(info[2]);
+    }
+
+    private void sendMessage(Point newPosition, String orientation) {
+        String message = String.join(
+                " ",
+                String.valueOf((int) newPosition.getX()),
+                String.valueOf((int) newPosition.getY()),
+                orientation
+        );
+        SendProtocol.sendToServer(SOCKET, message);
     }
 
     public void actionPerformed(ActionEvent e) {
