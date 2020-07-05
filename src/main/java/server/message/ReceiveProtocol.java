@@ -12,7 +12,6 @@ import java.util.List;
 
 public class ReceiveProtocol extends Thread {
 
-    private final int[][] griMap = {{1, 0, 1}, {1, 0, 0}, {0, 1, 1}};
     private final Socket socket;
     private final List<BattleCityServerThread> clientList;
 
@@ -27,7 +26,7 @@ public class ReceiveProtocol extends Thread {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String inputLine;
 
-            //out.println(Arrays.deepToString(this.griMap));
+            out.println(clientList.size() - 1);
 
             while ((inputLine = in.readLine()) != null) {
                 SendProtocol.sendToConnectedClients(inputLine, clientList);

@@ -9,7 +9,7 @@ import java.util.List;
 public class BattleCityServer {
 
     public static void main(String[] args) {
-        int portNumber = Integer.parseInt("4444");
+        int portNumber = Integer.parseInt("3000");
         boolean listening = true;
 
         ServerSocket serverSocket;
