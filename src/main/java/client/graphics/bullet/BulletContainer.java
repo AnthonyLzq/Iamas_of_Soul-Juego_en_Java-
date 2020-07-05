@@ -18,6 +18,7 @@ public class BulletContainer extends JLabel implements ActionListener {
         this.bullet = new Bullet();
         setSize(bullet.getWidth(), bullet.getHeight());
         setIcon(bullet.getImage());
+        setVisible(false);
         this.playerShoot = playerShoot;
         this.tankContainer = tankContainer;
     }

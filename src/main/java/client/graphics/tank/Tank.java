@@ -3,6 +3,7 @@ package client.graphics.tank;
 import javax.swing.ImageIcon;
 
 public class Tank {
+    private final String spriteRoute = "./src/main/resources/sprites/player";
     private ImageIcon image;
     private final int width;
     private final int height;
