@@ -1,19 +1,18 @@
 package client.graphics.window;
 
+import client.graphics.bullet.Bullet;
+import client.graphics.bullet.BulletContainer;
 import client.graphics.tank.Tank;
 import client.message.SendProtocol;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JButton;
+import javax.swing.*;
 
 
 public class MainWindow extends JFrame implements ActionListener, KeyListener {
@@ -22,6 +21,10 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private JLabel tankContainer;
     private Tank newTank;
     private JButton startButton;
+    private BulletContainer bulletContainer;
+    private final AtomicBoolean playerShoot = new AtomicBoolean(false);
+    private String bulletDirection;
+
 
     public MainWindow(Socket socket){
         this.SOCKET = socket;
@@ -65,6 +68,9 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         tankContainer = new JLabel();
         tankContainer.setBounds(50, 50, newTank.getWidth(), newTank.getHeight());
         add(tankContainer);
+        Bullet newBullet = new Bullet();
+        bulletContainer = new BulletContainer(playerShoot, tankContainer);
+        add(bulletContainer);
     }
 
     private void movement(int keyCode) {
@@ -90,6 +96,7 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private void movement(String orientation) {
         Point newPosition;
         int SPEED = 3;
+        bulletDirection = orientation;
         if(orientation.equals("up") && tankContainer.getY() > 0) {
             newPosition = new Point(tankContainer.getX(), tankContainer.getY() - SPEED);
             sendMessage(newPosition, orientation);
@@ -126,6 +133,27 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         setOrientation(info[2]);
     }
 
+
+    public void shoot(){
+        playerShoot.set(true);
+        switch (bulletDirection) {
+            case "up":
+                bulletContainer.shoot(bulletDirection, tankContainer.getX() + 21, tankContainer.getY() - 10);
+                break;
+            case "right":
+                bulletContainer.shoot(bulletDirection,tankContainer.getX() + 50, tankContainer.getY() + 20);
+
+                break;
+            case "down":
+                bulletContainer.shoot(bulletDirection,tankContainer.getX() + 21, tankContainer.getY() + 50);
+                break;
+            case "left":
+                bulletContainer.shoot(bulletDirection,tankContainer.getX() - 10, tankContainer.getY() + 20);
+                break;
+        }
+    }
+
+
     private void sendMessage(Point newPosition, String orientation) {
         String message = String.join(
                 " ",
@@ -147,6 +175,7 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
 
     public void keyPressed(java.awt.event.KeyEvent e) {
         if(e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) handleInitGame();
+        else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !playerShoot.get())shoot();
         else this.movement(e.getKeyCode());
     }
 
