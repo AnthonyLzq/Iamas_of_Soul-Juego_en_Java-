@@ -3,7 +3,7 @@ package client.graphics.bullet;
 import javax.swing.ImageIcon;
 
 public class Bullet {
-    private ImageIcon image;
+    private final ImageIcon image;
     private final int width;
     private final int height;
 
@@ -20,5 +20,4 @@ public class Bullet {
     public int getWidth() { return width; }
 
     public int getHeight() { return height; }
-
 }

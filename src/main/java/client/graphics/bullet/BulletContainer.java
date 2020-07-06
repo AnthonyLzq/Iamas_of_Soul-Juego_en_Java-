@@ -7,20 +7,18 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BulletContainer extends JLabel implements ActionListener {
-    Timer timer;
-    Bullet bullet;
-    int SPEED_BULLET = 1;
-    String bulletDirection;
-    AtomicBoolean playerShoot;
-    JLabel tankContainer;
+    private final AtomicBoolean PLAYER_SHOOT;
+    private final JLabel TANK_CONTAINER;
+    private Timer timer;
+    private String bulletDirection;
 
     public BulletContainer(AtomicBoolean playerShoot, JLabel tankContainer){
-        this.bullet = new Bullet();
+        Bullet bullet = new Bullet();
         setSize(bullet.getWidth(), bullet.getHeight());
         setIcon(bullet.getImage());
         setVisible(false);
-        this.playerShoot = playerShoot;
-        this.tankContainer = tankContainer;
+        this.PLAYER_SHOOT = playerShoot;
+        this.TANK_CONTAINER = tankContainer;
     }
 
     public void shoot(String bulletDirection, int x, int y){
@@ -32,22 +30,29 @@ public class BulletContainer extends JLabel implements ActionListener {
     }
 
     private void checkCollision(){
-        if(new Rectangle(getX(), getY(), getWidth(), getHeight())
-                .intersects(new Rectangle(tankContainer.getX(), tankContainer.getY(), tankContainer.getWidth(), tankContainer.getHeight()))){
+        Rectangle bullet = new Rectangle(getX(), getY(), getWidth(), getHeight());
+        Rectangle container = new Rectangle(
+                TANK_CONTAINER.getX(),
+                TANK_CONTAINER.getY(),
+                TANK_CONTAINER.getWidth(),
+                TANK_CONTAINER.getHeight()
+        );
+        if(bullet.intersects(container)){
             setVisible(false);
-            tankContainer.setVisible(false);
-            playerShoot.set(false);
+            TANK_CONTAINER.setVisible(false);
+            PLAYER_SHOOT.set(false);
             timer.stop();
         }
         if(getX() < 1 || getX() > 500 || getY() < 1 || getY() > 500){
             setVisible(false);
-            playerShoot.set(false);
+            PLAYER_SHOOT.set(false);
             timer.stop();
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        int SPEED_BULLET = 4;
         switch (bulletDirection){
             case "up":
                 setLocation(getX(), getY() - SPEED_BULLET);
@@ -62,7 +67,6 @@ public class BulletContainer extends JLabel implements ActionListener {
                 setLocation(getX() - SPEED_BULLET, getY());
                 break;
         }
-        System.out.println(getX() + " " + getY());
         checkCollision();
     }
 }

@@ -23,7 +23,8 @@ public class ReceiveProtocol extends Thread {
             String messageFromServer;
 
             // Send to position to the tank
-            while ((messageFromServer = in.readLine()) != null) MAIN_WINDOW.setTankLocation(messageFromServer);
+            while ((messageFromServer = in.readLine()) != null)
+                MAIN_WINDOW.getTankContainer().setTankLocation(messageFromServer);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -3,13 +3,14 @@ package client.graphics.tank;
 import javax.swing.ImageIcon;
 
 public class Tank {
-    private final String spriteRoute = "./src/main/resources/sprites/player";
+    private String spriteRoute = "./src/main/resources/sprites/player";
     private ImageIcon image;
     private final int width;
     private final int height;
 
-    public Tank() {
-        image = new ImageIcon("./src/main/resources/sprites/tankUp.png");
+    public Tank(int code) {
+        spriteRoute += String.valueOf(++code);
+        image = new ImageIcon(spriteRoute+"/tankUp.png");
         width = image.getIconWidth();
         height = image.getIconHeight();
     }
@@ -24,12 +25,12 @@ public class Tank {
 
     public void setImage(String orientation) {
         if ("up".equals(orientation))
-            this.image = new ImageIcon("./src/main/resources/sprites/tankUp.png");
+            this.image = new ImageIcon(spriteRoute + "/tankUp.png");
         else if ("right".equals(orientation))
-            this.image = new ImageIcon("./src/main/resources/sprites/tankRight.png");
+            this.image = new ImageIcon(spriteRoute + "/tankRight.png");
         else if ("down".equals(orientation))
-            this.image = new ImageIcon("./src/main/resources/sprites/tankDown.png");
+            this.image = new ImageIcon(spriteRoute + "/tankDown.png");
         else if ("left".equals(orientation))
-            this.image = new ImageIcon("./src/main/resources/sprites/tankLeft.png");
+            this.image = new ImageIcon(spriteRoute + "/tankLeft.png");
     }
 }
