@@ -4,9 +4,9 @@ import javax.swing.ImageIcon;
 
 public class Tank {
     private String spriteRoute = "./src/main/resources/sprites/player";
-    private ImageIcon image;
     private final int width;
     private final int height;
+    private ImageIcon image;
 
     public Tank(int code) {
         spriteRoute += String.valueOf(++code);
