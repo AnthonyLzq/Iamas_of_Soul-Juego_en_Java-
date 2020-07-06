@@ -10,7 +10,7 @@ public class Tank {
 
     public Tank(int code) {
         spriteRoute += String.valueOf(++code);
-        image = new ImageIcon(spriteRoute+"/tankUp.png");
+        image = new ImageIcon(spriteRoute + "/tankUp.png");
         width = image.getIconWidth();
         height = image.getIconHeight();
     }

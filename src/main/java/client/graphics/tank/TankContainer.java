@@ -1,5 +1,6 @@
 package client.graphics.tank;
 
+import client.message.Message;
 import client.message.SendProtocol;
 
 import javax.swing.*;
@@ -11,18 +12,35 @@ public class TankContainer extends JLabel {
     private final int FRAME_WIDTH;
     private final int FRAME_HEIGHT;
     private final Socket SOCKET;
-    private final Tank TANK;
+    private Tank TANK;
     private String orientation;
+    private String id;
 
     public TankContainer(int frameWidth, int frameHeight, Socket socket) {
-        this.TANK = new Tank(0);
-        setBounds(50, 50, TANK.getWidth(), TANK.getHeight());
-        setIcon(TANK.getImage());
         setVisible(false);
         this.FRAME_WIDTH = frameWidth;
         this.FRAME_HEIGHT = frameHeight;
         this.SOCKET = socket;
         this.orientation = "up";
+    }
+
+    public void setTank(int code, String id) {
+        this.id = id;
+        TANK = new Tank(code);
+        switch(code) {
+            case 0:
+                setBounds(50, 50, TANK.getWidth(), TANK.getHeight());
+                break;
+            case 1:
+                setBounds(150, 50, TANK.getWidth(), TANK.getHeight());
+                break;
+            case 2:
+                setBounds(50, 150, TANK.getWidth(), TANK.getHeight());
+                break;
+            case 3:
+                setBounds(150, 150, TANK.getWidth(), TANK.getHeight());
+        }
+        setIcon(TANK.getImage());
     }
 
     public void movement(int keyCode) {
@@ -61,12 +79,7 @@ public class TankContainer extends JLabel {
     }
 
     private void sendMessage(Point newPosition, String orientation) {
-        String message = String.join(
-                " ",
-                String.valueOf((int) newPosition.getX()),
-                String.valueOf((int) newPosition.getY()),
-                orientation
-        );
+        Message message = new Message(id, newPosition, orientation);
         SendProtocol.sendToServer(SOCKET, message);
     }
 
@@ -92,4 +105,6 @@ public class TankContainer extends JLabel {
     public String getOrientation() {
         return orientation;
     }
+
+    public String getId() { return id; }
 }
