@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class BattleCityClient {
     private static final String HOST_NAME = "127.0.0.1";
-    private static final int PORT_NUMBER = 4444;
+    private static final int PORT_NUMBER = 3000;
 
     public static void main(String[] args) {
         try {
