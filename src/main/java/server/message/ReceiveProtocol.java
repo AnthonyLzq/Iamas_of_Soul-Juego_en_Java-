@@ -26,19 +26,14 @@ public class ReceiveProtocol extends Thread {
     }
 
     public void run() {
-        System.out.println("RP: " + clientIds);
         try {
             PrintWriter os = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String inputLine;
-
-            if (clientList.size() == 2) {
-                Message startMessage = new Message();
-                startMessage.setAction("START");
-                startMessage.setClientsIds(clientIds);
-
-                SendProtocol.sendToConnectedClients(startMessage, clientList);
-            }
+            Message messageId = new Message();
+            messageId.setClientId(clientId);
+            messageId.setAction("ASSIGN");
+            os.println(messageId.toString());
 
             while ((inputLine = is.readLine()) != null) {
                 Message message = Message.parser(inputLine);
@@ -52,13 +47,20 @@ public class ReceiveProtocol extends Thread {
 
                 if (message.getAction().equals("ON_START")) {
                     Message initMessage = new Message();
-
-                    initMessage.setClientId(clientId);
                     initMessage.setClientsIds(clientIds);
                     initMessage.setAction("NEW");
 
-                    System.out.println("OS: " + clientIds);
                     SendProtocol.sendToConnectedClients(initMessage, clientList);
+
+
+                    if (clientList.size() == 2) {
+                        Message startMessage = new Message();
+                        startMessage.setAction("START");
+                        startMessage.setClientsIds(clientIds);
+
+                        SendProtocol.sendToConnectedClients(startMessage, clientList);
+                    }
+
                     //os.println(initMessage.toString());
                 }
             }

@@ -80,6 +80,7 @@ public class TankContainer extends JLabel {
 
     private void sendMessage(Point newPosition, String orientation) {
         Message message = new Message(id, newPosition, orientation);
+        message.setAction("MOVE");
         SendProtocol.sendToServer(SOCKET, message);
     }
 
@@ -88,18 +89,9 @@ public class TankContainer extends JLabel {
         setIcon(TANK.getImage());
     }
 
-    public void setTankLocation(String newStringPositionAndOrientation) {
-        /*
-         * info:
-         * - info[0]: X position
-         * - info[1]: Y position
-         * - info[2]: orientation
-         *
-         */
-        String[] info = newStringPositionAndOrientation.split(" ");
-        Point newPosition = new Point(Integer.parseInt(info[0]), Integer.parseInt(info[1]));
-        setLocation(newPosition);
-        setOrientation(info[2]);
+    public void setTankLocation(int x, int y, String orientation) {
+        setLocation(x, y);
+        setOrientation(orientation);
     }
 
     public String getOrientation() {

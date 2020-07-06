@@ -24,13 +24,13 @@ public class ReceiveProtocol extends Thread {
             BufferedReader is = new BufferedReader(new InputStreamReader(SOCKET.getInputStream()));
             String inputLine;
             while ((inputLine = is.readLine()) != null) {
-                System.out.println(inputLine);
                 Message messageFromServer = Message.parser(inputLine);
-                System.out.println(messageFromServer.getClientsIds());
                 switch (messageFromServer.getAction()) {
+                    case "ASSIGN":
+                        MAIN_WINDOW.setClientId(messageFromServer.getClientId());
+                        break;
                     case "NEW":
-                        System.out.println("ids: " + messageFromServer.getClientsIds());
-                        MAIN_WINDOW.newPlayer(messageFromServer.getClientsIds().size(), null);
+                        MAIN_WINDOW.newPlayer(messageFromServer.getClientsIds().size(), messageFromServer.getClientsIds());
                         break;
                     case "START":
                         MAIN_WINDOW.newPlayer(2, messageFromServer.getClientsIds());
