@@ -1,5 +1,16 @@
 # Battle City - client side
 
+## Version 0.4.0
+- Implemented:
+  - Tank logic separated from the window logic.
+  - Now, the tank shoots a bullet.
+- Pending:
+  - Lobby screen, in order to wait for a minimum number of players.
+  - Each client needs its own id.
+  - Each client needs its own tank.
+  - Collisions between tanks.
+  - Send the bullet position to the server.
+
 ## Version 0.3.0
 
 - Implemented:
@@ -10,7 +21,7 @@
   - Lobby screen, in order to wait for a minimum number of players.
   - Each client needs its own id.
   - Each client needs its own tank.
-  - Collisions between tanks. 
+  - Collisions between tanks.
 
 ## Version 0.2.0
 
