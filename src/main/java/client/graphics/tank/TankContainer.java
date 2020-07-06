@@ -9,10 +9,11 @@ import java.awt.event.KeyEvent;
 import java.net.Socket;
 
 public class TankContainer extends JLabel {
-    private final int FRAME_WIDTH;
-    private final int FRAME_HEIGHT;
     private final Socket SOCKET;
     private Tank TANK;
+
+    private final int FRAME_WIDTH;
+    private final int FRAME_HEIGHT;
     private String orientation;
     private String id;
 
@@ -46,6 +47,7 @@ public class TankContainer extends JLabel {
     public void movement(int keyCode) {
         int SPEED = 3;
         Point newPosition = null;
+
         switch (keyCode) {
             case (KeyEvent.VK_UP):
             case (KeyEvent.VK_W):

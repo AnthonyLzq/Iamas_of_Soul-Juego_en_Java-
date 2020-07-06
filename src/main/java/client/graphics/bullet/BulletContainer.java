@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class BulletContainer extends JLabel implements ActionListener {
     private final AtomicBoolean PLAYER_SHOOT;
     private final JLabel TANK_CONTAINER;
+
     private Timer timer;
     private String bulletDirection;
 
@@ -65,7 +66,6 @@ public class BulletContainer extends JLabel implements ActionListener {
                 break;
             case "left":
                 setLocation(getX() - SPEED_BULLET, getY());
-                break;
         }
         checkCollision();
     }

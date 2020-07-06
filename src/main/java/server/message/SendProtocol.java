@@ -9,11 +9,11 @@ import java.io.PrintWriter;
 import java.util.List;
 
 public class SendProtocol {
-    public static void sendToConnectedClients(Message message, List<BattleCityServerThread> clientList) {
+    public static void sendToConnectedClients(List<BattleCityServerThread> clientList, Message message) {
         for (BattleCityServerThread client: clientList) {
             try {
-                PrintWriter os = new PrintWriter(client.getSocket().getOutputStream(), true);
-                os.println(message);
+                PrintWriter pw = new PrintWriter(client.getSocket().getOutputStream(), true);
+                pw.println(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
