@@ -1,2 +1,2 @@
-# Battle City - client side
+# Battle City
 
