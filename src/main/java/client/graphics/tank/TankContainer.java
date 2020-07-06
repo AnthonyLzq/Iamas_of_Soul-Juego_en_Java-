@@ -1,7 +1,7 @@
 package client.graphics.tank;
 
-import client.message.Message;
 import client.message.SendProtocol;
+import message.Message;
 
 import javax.swing.*;
 import java.awt.*;
@@ -107,4 +107,16 @@ public class TankContainer extends JLabel {
     }
 
     public String getId() { return id; }
+
+    @Override
+    public String toString() {
+        return "TankContainer{" +
+                "FRAME_WIDTH=" + FRAME_WIDTH +
+                ", FRAME_HEIGHT=" + FRAME_HEIGHT +
+                ", SOCKET=" + SOCKET +
+                ", TANK=" + TANK +
+                ", orientation='" + orientation + '\'' +
+                ", id='" + id + '\'' +
+                '}';
+    }
 }

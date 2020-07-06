@@ -24,6 +24,7 @@ public class BattleCityServer {
                 Socket client = serverSocket.accept();
                 String clientId = UUID.randomUUID().toString();
                 clientIds.add(clientId);
+                System.out.println(clientIds);
                 BattleCityServerThread battleCityServerThread = new BattleCityServerThread(client, clientList, clientId, clientIds);
                 clientList.add(battleCityServerThread);
                 battleCityServerThread.start();

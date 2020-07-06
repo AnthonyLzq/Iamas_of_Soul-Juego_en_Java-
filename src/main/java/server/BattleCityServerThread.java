@@ -17,6 +17,7 @@ public class BattleCityServerThread extends Thread {
         this.clientList = clientList;
         this.clientId = clientId;
         this.clientIds = clientIds;
+        System.out.println("BCSTJ: "+clientIds);
     }
 
     public void run() {

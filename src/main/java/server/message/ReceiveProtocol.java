@@ -1,11 +1,13 @@
 package server.message;
 
+import message.Message;
 import server.BattleCityServerThread;
 import server.ServerActions;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
@@ -24,29 +26,22 @@ public class ReceiveProtocol extends Thread {
     }
 
     public void run() {
+        System.out.println("RP: " + clientIds);
         try {
-            ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
-
-            Message initMessage = new Message();
-
-            initMessage.setClientId(clientId);
-            initMessage.setClientsIds(clientIds);
-            initMessage.setAction("NEW");
-
-            os.writeObject(initMessage);
+            PrintWriter os = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String inputLine;
 
             if (clientList.size() == 2) {
                 Message startMessage = new Message();
                 startMessage.setAction("START");
                 startMessage.setClientsIds(clientIds);
 
-                os.writeObject(startMessage);
+                SendProtocol.sendToConnectedClients(startMessage, clientList);
             }
 
-            while (clientList.size() != 0) {
-                Message message = (Message) is.readObject();
-
+            while ((inputLine = is.readLine()) != null) {
+                Message message = Message.parser(inputLine);
                 if (message.getAction().equals("DISCONNECT")) {
                     ServerActions.onDisconnect(message.getClientId(), clientList, clientIds);
                 }
@@ -54,10 +49,23 @@ public class ReceiveProtocol extends Thread {
                 if (message.getAction().equals("MOVE")) {
                     ServerActions.onMoveTank(message, clientList);
                 }
+
+                if (message.getAction().equals("ON_START")) {
+                    Message initMessage = new Message();
+
+                    initMessage.setClientId(clientId);
+                    initMessage.setClientsIds(clientIds);
+                    initMessage.setAction("NEW");
+
+                    System.out.println("OS: " + clientIds);
+                    SendProtocol.sendToConnectedClients(initMessage, clientList);
+                    //os.println(initMessage.toString());
+                }
             }
-        } catch (IOException | ClassNotFoundException e) {
+            is.close();
+            os.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
-

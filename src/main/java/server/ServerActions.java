@@ -1,9 +1,10 @@
 package server;
 
-import server.message.Message;
+import message.Message;
 import server.message.SendProtocol;
 import server.utils.ClientChecker;
 
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 public class ServerActions {
