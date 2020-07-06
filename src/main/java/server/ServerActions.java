@@ -20,8 +20,4 @@ public class ServerActions {
     public static void onMoveTank(Message message, List<BattleCityServerThread> clientList) {
         SendProtocol.sendToConnectedClients(message, clientList);
     }
-
-    public static void onUpdateIdArray(Message message, List<String> clientIds) {
-
-    }
 }

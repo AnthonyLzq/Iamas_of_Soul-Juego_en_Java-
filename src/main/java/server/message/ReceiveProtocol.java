@@ -31,6 +31,7 @@ public class ReceiveProtocol extends Thread {
             Message initMessage = new Message();
 
             initMessage.setClientId(clientId);
+            initMessage.setClientsIds(clientIds);
             initMessage.setAction("NEW");
 
             os.writeObject(initMessage);
@@ -38,14 +39,9 @@ public class ReceiveProtocol extends Thread {
             if (clientList.size() == 2) {
                 Message startMessage = new Message();
                 startMessage.setAction("START");
+                startMessage.setClientsIds(clientIds);
 
                 os.writeObject(startMessage);
-
-                Message updateMessage = new Message();
-                updateMessage.setClientsIds(clientIds);
-                updateMessage.setAction("UPDATE_LIST");
-
-                os.writeObject(updateMessage);
             }
 
             while (clientList.size() != 0) {
@@ -57,10 +53,6 @@ public class ReceiveProtocol extends Thread {
 
                 if (message.getAction().equals("MOVE")) {
                     ServerActions.onMoveTank(message, clientList);
-                }
-
-                if (message.getAction().equals("UPDATE_IDS")) {
-                    ServerActions.onUpdateIdArray(message, clientIds);
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
