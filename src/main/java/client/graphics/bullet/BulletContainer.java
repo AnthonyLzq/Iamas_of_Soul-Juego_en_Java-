@@ -62,7 +62,6 @@ public class BulletContainer extends JLabel implements ActionListener {
                 setLocation(getX() - SPEED_BULLET, getY());
                 break;
         }
-        System.out.println(getX() + " " + getY());
         checkCollision();
     }
 }
