@@ -1,5 +1,13 @@
 # Battle City - client side
 
+## Version 0.5.0
+- Implemented:
+  - Each client can move its own tank, assigned by its id.
+  - Lobby screen.
+- Pending:
+  - Collisions between tanks.
+  - Send the bullet position to the server.
+
 ## Version 0.4.0
 - Implemented:
   - Tank logic separated from the window logic.
