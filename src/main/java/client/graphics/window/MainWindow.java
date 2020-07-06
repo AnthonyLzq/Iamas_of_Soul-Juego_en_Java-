@@ -16,6 +16,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainWindow extends JFrame implements ActionListener, KeyListener {
+    private final Socket SOCKET;
+    private final List<TankContainer> tankContainers = new ArrayList<TankContainer>();
+    private final List<BulletContainer> bulletContainers = new ArrayList<BulletContainer>();
+
+    private JButton startButton;
+    private JLabel wait;
+    private TankContainer tankContainer;
+    private BulletContainer bulletContainer;
+
     private final Dimension WINDOW_SIZE = new Dimension(500, 500);
     private final AtomicBoolean PLAYER_SHOOT = new AtomicBoolean(false);
     private final AtomicBoolean[] PLAYERS_SHOT = {
@@ -24,22 +33,13 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
             new AtomicBoolean(false),
             new AtomicBoolean(false),
     };
-    private final Socket SOCKET;
-    private final List<TankContainer> tankContainers = new ArrayList<TankContainer>();
-    private final List<BulletContainer> bulletContainers = new ArrayList<BulletContainer>();
-    private JButton startButton;
-    private JLabel wait;
-    private BulletContainer bulletContainer;
+
     private String clientId;
-    private TankContainer tankContainer;
 
     public MainWindow(Socket socket) {
         SOCKET = socket;
     }
 
-    public String getClientId() {
-        return clientId;
-    }
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -98,8 +98,6 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private void createTankContainers(List<TankContainer> tankContainers) {
         tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
         tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
-        //tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
-        //tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
 
         for (TankContainer tc : tankContainers) {
             add(tc);
@@ -158,27 +156,24 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER)
             SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
         // else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
-         else tankContainer.movement(e.getKeyCode());
+        else tankContainer.movement(e.getKeyCode());
     }
 
     public void keyPressed(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER)
             SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
         // else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
-         else tankContainer.movement(e.getKeyCode());
+        else tankContainer.movement(e.getKeyCode());
     }
 
     public void keyReleased(java.awt.event.KeyEvent e) {
     }
 
     private void handleInitGame() {
-        if (wait != null)
-            wait.setVisible(false);
+        if (wait != null) wait.setVisible(false);
         startButton.setVisible(false);
         for (TankContainer tc : tankContainers) {
             tc.setVisible(true);
         }
     }
-
-    // public TankContainer getTankContainer() { return tankContainer; }
 }

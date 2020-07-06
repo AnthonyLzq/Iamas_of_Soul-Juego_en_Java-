@@ -6,7 +6,6 @@ import message.Message;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.net.Socket;
 
 public class ReceiveProtocol extends Thread {
@@ -21,16 +20,19 @@ public class ReceiveProtocol extends Thread {
 
     public void run() {
         try {
-            BufferedReader is = new BufferedReader(new InputStreamReader(SOCKET.getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(SOCKET.getInputStream()));
             String inputLine;
-            while ((inputLine = is.readLine()) != null) {
+            while ((inputLine = br.readLine()) != null) {
                 Message messageFromServer = Message.parser(inputLine);
                 switch (messageFromServer.getAction()) {
                     case "ASSIGN":
                         MAIN_WINDOW.setClientId(messageFromServer.getClientId());
                         break;
                     case "NEW":
-                        MAIN_WINDOW.newPlayer(messageFromServer.getClientsIds().size(), messageFromServer.getClientsIds());
+                        MAIN_WINDOW.newPlayer(
+                                messageFromServer.getClientsIds().size(),
+                                messageFromServer.getClientsIds()
+                        );
                         break;
                     case "START":
                         MAIN_WINDOW.newPlayer(2, messageFromServer.getClientsIds());

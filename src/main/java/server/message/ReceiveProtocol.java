@@ -12,60 +12,57 @@ import java.net.Socket;
 import java.util.List;
 
 public class ReceiveProtocol extends Thread {
+    private final List<BattleCityServerThread> CLIENT_LIST;
+    private final List<String> CLIENT_IDS;
 
-    private final Socket socket;
-    private final List<BattleCityServerThread> clientList;
-    private final String clientId;
-    private final List<String> clientIds;
+    private final String CLIENT_ID;
+    private final Socket SOCKET;
 
-    public ReceiveProtocol(Socket socket, List<BattleCityServerThread> clientList, String clientId, List<String> clientIds) {
-        this.socket = socket;
-        this.clientList = clientList;
-        this.clientId = clientId;
-        this.clientIds = clientIds;
+    public ReceiveProtocol(List<BattleCityServerThread> clientList, List<String> clientIds, String clientId, Socket socket) {
+        this.CLIENT_LIST = clientList;
+        this.CLIENT_IDS = clientIds;
+        this.CLIENT_ID = clientId;
+        this.SOCKET = socket;
     }
 
     public void run() {
         try {
-            PrintWriter os = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String inputLine;
+            PrintWriter pw = new PrintWriter(SOCKET.getOutputStream(), true);
+            BufferedReader br = new BufferedReader(new InputStreamReader(SOCKET.getInputStream()));
             Message messageId = new Message();
-            messageId.setClientId(clientId);
+
+            messageId.setClientId(CLIENT_ID);
             messageId.setAction("ASSIGN");
-            os.println(messageId.toString());
+            pw.println(messageId.toString());
 
-            while ((inputLine = is.readLine()) != null) {
+            while ((inputLine = br.readLine()) != null) {
                 Message message = Message.parser(inputLine);
-                if (message.getAction().equals("DISCONNECT")) {
-                    ServerActions.onDisconnect(message.getClientId(), clientList, clientIds);
-                }
-
-                if (message.getAction().equals("MOVE")) {
-                    ServerActions.onMoveTank(message, clientList);
-                }
 
                 if (message.getAction().equals("ON_START")) {
                     Message initMessage = new Message();
-                    initMessage.setClientsIds(clientIds);
+                    initMessage.setClientsIds(CLIENT_IDS);
                     initMessage.setAction("NEW");
 
-                    SendProtocol.sendToConnectedClients(initMessage, clientList);
+                    SendProtocol.sendToConnectedClients(CLIENT_LIST, initMessage);
 
-
-                    if (clientList.size() == 2) {
+                    if (CLIENT_LIST.size() == 2) {
                         Message startMessage = new Message();
                         startMessage.setAction("START");
-                        startMessage.setClientsIds(clientIds);
+                        startMessage.setClientsIds(CLIENT_IDS);
 
-                        SendProtocol.sendToConnectedClients(startMessage, clientList);
+                        SendProtocol.sendToConnectedClients(CLIENT_LIST, startMessage);
                     }
-
-                    //os.println(initMessage.toString());
+                }
+                if (message.getAction().equals("MOVE")) {
+                    ServerActions.onMoveTank(CLIENT_LIST, message);
+                }
+                if (message.getAction().equals("DISCONNECT")) {
+                    ServerActions.onDisconnect(CLIENT_LIST, CLIENT_IDS, message.getClientId());
                 }
             }
-            is.close();
-            os.close();
+            br.close();
+            pw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

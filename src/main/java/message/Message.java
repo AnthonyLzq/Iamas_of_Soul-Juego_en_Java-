@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Message {
+    private List<String> clientsIds;
     private String clientId;
+    private String orientation;
+    private String action;
     private int posX;
     private int posY;
-    private String action;
-    private String orientation;
-    private List<String> clientsIds;
 
     public Message() {
     }

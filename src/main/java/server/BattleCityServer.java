@@ -11,16 +11,15 @@ public class BattleCityServer {
 
     public static void main(String[] args) {
         int portNumber = Integer.parseInt("3000");
-        boolean listening = true;
 
-        ServerSocket serverSocket;
         List<BattleCityServerThread> clientList = new ArrayList<>();
         List<String> clientIds = new ArrayList<>();
+        ServerSocket serverSocket;
 
         try {
             serverSocket = new ServerSocket(portNumber);
 
-            while (listening) {
+            while (true) {
                 Socket client = serverSocket.accept();
                 String clientId = UUID.randomUUID().toString();
                 clientIds.add(clientId);

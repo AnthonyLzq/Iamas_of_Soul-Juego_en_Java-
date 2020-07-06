@@ -10,8 +10,8 @@ import java.net.Socket;
 public class SendProtocol {
     public static void sendToServer(Socket socket, Message message) {
         try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(message.toString());
+            PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+            pw.println(message.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
