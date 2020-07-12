@@ -44,7 +44,9 @@ public class ReceiveProtocol extends Thread {
                         );
                         break;
                     case "SHOOT":
-                        MAIN_WINDOW.shootBulletInAllClients(messageFromServer.getClientId());
+                        MAIN_WINDOW.shootBulletInAllClients(messageFromServer.getClientId(), messageFromServer.getOrientation(), messageFromServer.getPosX(), messageFromServer.getPosY());
+                    case "DISCONNECT":
+                        // IMPLEMENT DISCONNECT
                 }
             }
         } catch (IOException e) {

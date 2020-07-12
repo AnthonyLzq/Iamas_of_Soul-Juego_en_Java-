@@ -6,7 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ClientChecker {
-    public static void removeFromClientList(String id, List<BattleCityServerThread> clientList, List<String> clientIds) {
+    public static int removeFromClientList(String id, List<BattleCityServerThread> clientList, List<String> clientIds) {
+        int i = 0;
         Iterator<BattleCityServerThread> iterator = clientList.iterator();
 
         while (iterator.hasNext()) {
@@ -16,6 +17,7 @@ public class ClientChecker {
                 iterator.remove();
                 break;
             }
+            i++;
         }
 
         Iterator<String> iterator1 = clientIds.iterator();
@@ -28,5 +30,6 @@ public class ClientChecker {
                 break;
             }
         }
+        return i;
     }
 }

@@ -4,6 +4,7 @@ import client.graphics.bullet.BulletContainer;
 import client.graphics.tank.TankContainer;
 import client.message.SendProtocol;
 import message.Message;
+import server.BattleCityServerThread;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,24 +13,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private final Dimension WINDOW_SIZE = new Dimension(500, 500);
     private final AtomicBoolean PLAYER_SHOOT = new AtomicBoolean(false);
-    private final AtomicBoolean[] PLAYERS_SHOT = {
-            new AtomicBoolean(false),
-            new AtomicBoolean(false),
-            new AtomicBoolean(false),
-            new AtomicBoolean(false),
-    };
     private final Socket SOCKET;
     private final List<TankContainer> tankContainers = new ArrayList<TankContainer>();
     private final List<BulletContainer> bulletContainers = new ArrayList<BulletContainer>();
     private JButton startButton;
     private JLabel wait;
-    private BulletContainer bulletContainer;
     private String clientId;
     private TankContainer tankContainer;
 
@@ -56,6 +51,7 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     public void start() {
         setProperties();
         createTankContainers(tankContainers);
+        createBulletContainers(bulletContainers);
         startScreen();
     }
 
@@ -106,8 +102,19 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         }
     }
 
+    private void createBulletContainers(List<BulletContainer> bulletContainers){
+        bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers, this));
+        bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers, this));
+        //bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers));
+        //bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers));
+
+        for (BulletContainer bc : bulletContainers){
+            add(bc);
+        }
+
+    }
+
     public void initGame(List<String> ids) {
-        // TODO: IMPLEMENT BULLETS
         int i = 0;
         for (TankContainer tc : tankContainers) {
             tc.setTank(i, ids.get(i));
@@ -126,29 +133,49 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         }
     }
 
-    public void shootBulletInAllClients(String id) {
+    public void shootBulletInAllClients(String id, String orientation, int x, int y) {
+        int i = 0;
+        for (TankContainer tc : tankContainers){
+            if(tc.getId().equals(id)){
+                bulletContainers.get(i).shoot(orientation, x, y);
+                break;
+            }
+            i++;
+        }
     }
 
-    /*
-        public void shoot(String bulletDirection){
-            if(tankContainer.isVisible()) {
-                PLAYER_SHOOT.set(true);
-                switch (bulletDirection) {
-                    case "up":
-                        bulletContainer.shoot(bulletDirection, tankContainer.getX() + 21, tankContainer.getY() - 10);
-                        break;
-                    case "right":
-                        bulletContainer.shoot(bulletDirection,tankContainer.getX() + 50, tankContainer.getY() + 20);
-                        break;
-                    case "down":
-                        bulletContainer.shoot(bulletDirection,tankContainer.getX() + 21, tankContainer.getY() + 50);
-                        break;
-                    case "left":
-                        bulletContainer.shoot(bulletDirection,tankContainer.getX() - 10, tankContainer.getY() + 20);
-                }
+    public void shoot(String bulletDirection){
+        Message message = new Message();
+        message.setAction("SHOOT");
+        message.setClientId(tankContainer.getId());
+        message.setOrientation(bulletDirection);
+        if(tankContainer.isVisible()) {
+            PLAYER_SHOOT.set(true);
+            switch (bulletDirection) {
+                case "up":
+                    message.setPosX(tankContainer.getX() + 21);
+                    message.setPosY(tankContainer.getY() - 10);
+                    break;
+                case "right":
+                    message.setPosX(tankContainer.getX() + 50);
+                    message.setPosY(tankContainer.getY() + 20);
+                    break;
+                case "down":
+                    message.setPosX(tankContainer.getX() + 21);
+                    message.setPosY(tankContainer.getY() + 50);
+                    break;
+                case "left":
+                    message.setPosX(tankContainer.getX() - 10);
+                    message.setPosY(tankContainer.getY() + 20);
             }
         }
-    */
+        SendProtocol.sendToServer(SOCKET, message);
+    }
+
+    public void removeDeathTanks(int i){
+        tankContainers.remove(i);
+        bulletContainers.remove(i);
+    }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
@@ -157,14 +184,14 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     public void keyTyped(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER)
             SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
-        // else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
+         else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
          else tankContainer.movement(e.getKeyCode());
     }
 
     public void keyPressed(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER)
             SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
-        // else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
+         else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
          else tankContainer.movement(e.getKeyCode());
     }
 

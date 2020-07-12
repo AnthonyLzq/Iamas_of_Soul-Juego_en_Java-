@@ -60,8 +60,10 @@ public class ReceiveProtocol extends Thread {
 
                         SendProtocol.sendToConnectedClients(startMessage, clientList);
                     }
+                }
 
-                    //os.println(initMessage.toString());
+                if (message.getAction().equals("SHOOT")) {
+                    ServerActions.onShootTank(message, clientList);
                 }
             }
             is.close();
