@@ -37,23 +37,25 @@ public class BulletContainer extends JLabel implements ActionListener {
     private void checkCollision(){
         Rectangle bullet = new Rectangle(getX(), getY(), getWidth(), getHeight());
         for (TankContainer tc : TANK_CONTAINERS){
-            Rectangle container = new Rectangle(
-                    tc.getX(),
-                    tc.getY(),
-                    tc.getWidth(),
-                    tc.getHeight()
-            );
-            if(bullet.intersects(container)){
-                setVisible(false);
-                tc.setVisible(false);
-                PLAYER_SHOOT.set(false);
-                MAIN_WINDOW.remove(tc);
-                timer.stop();
-            }
-            if(getX() < 1 || getX() > 500 || getY() < 1 || getY() > 500){
-                setVisible(false);
-                PLAYER_SHOOT.set(false);
-                timer.stop();
+            if(tc.isVisible()){
+                Rectangle container = new Rectangle(
+                        tc.getX(),
+                        tc.getY(),
+                        tc.getWidth(),
+                        tc.getHeight()
+                );
+                if(bullet.intersects(container)){
+                    setVisible(false);
+                    tc.setVisible(false);
+                    PLAYER_SHOOT.set(false);
+                    MAIN_WINDOW.remove(tc);
+                    timer.stop();
+                }
+                if(getX() < 1 || getX() > 500 || getY() < 1 || getY() > 500){
+                    setVisible(false);
+                    PLAYER_SHOOT.set(false);
+                    timer.stop();
+                }
             }
         }
     }

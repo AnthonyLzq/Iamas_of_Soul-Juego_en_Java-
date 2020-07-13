@@ -41,7 +41,7 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     }
 
     public void newPlayer(int nPlayers, List<String> ids) {
-        int TOTAL_PLAYERS = 2;
+        int TOTAL_PLAYERS = 4;
         if (nPlayers == TOTAL_PLAYERS) {
             handleInitGame();
             initGame(ids);
@@ -85,7 +85,7 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private void waitScreen(int nPlayers) {
         startButton.setVisible(false);
         if (wait != null) wait.setVisible(false);
-        wait = new JLabel("Waiting for players: " + nPlayers + "/2");
+        wait = new JLabel("Waiting for players: " + nPlayers + "/4");
         add(wait);
         wait.setBounds(50, 50, 250, 30);
         wait.setVisible(true);
@@ -94,8 +94,8 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private void createTankContainers(List<TankContainer> tankContainers) {
         tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
         tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
-        //tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
-        //tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
+        tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
+        tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
 
         for (TankContainer tc : tankContainers) {
             add(tc);
@@ -105,8 +105,8 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private void createBulletContainers(List<BulletContainer> bulletContainers){
         bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers, this));
         bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers, this));
-        //bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers));
-        //bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers));
+        bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers, this));
+        bulletContainers.add(new BulletContainer(PLAYER_SHOOT, tankContainers, this));
 
         for (BulletContainer bc : bulletContainers){
             add(bc);

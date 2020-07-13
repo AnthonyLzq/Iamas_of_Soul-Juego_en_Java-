@@ -53,7 +53,7 @@ public class ReceiveProtocol extends Thread {
                     SendProtocol.sendToConnectedClients(initMessage, clientList);
 
 
-                    if (clientList.size() == 2) {
+                    if (clientList.size() == 4) {
                         Message startMessage = new Message();
                         startMessage.setAction("START");
                         startMessage.setClientsIds(clientIds);

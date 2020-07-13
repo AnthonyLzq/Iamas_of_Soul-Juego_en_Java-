@@ -33,7 +33,7 @@ public class ReceiveProtocol extends Thread {
                         MAIN_WINDOW.newPlayer(messageFromServer.getClientsIds().size(), messageFromServer.getClientsIds());
                         break;
                     case "START":
-                        MAIN_WINDOW.newPlayer(2, messageFromServer.getClientsIds());
+                        MAIN_WINDOW.newPlayer(4, messageFromServer.getClientsIds());
                         break;
                     case "MOVE":
                         MAIN_WINDOW.setPosition(
