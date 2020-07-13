@@ -38,6 +38,11 @@ public class ReceiveProtocol extends Thread {
 
             while ((inputLine = br.readLine()) != null) {
                 Message message = Message.parser(inputLine);
+                if (message.getAction().equals("DISCONNECT"))
+                    ServerActions.onDisconnect(CLIENT_LIST, CLIENT_IDS, message.getClientId());
+
+                if (message.getAction().equals("MOVE"))
+                    ServerActions.onMoveTank(CLIENT_LIST, message);
 
                 if (message.getAction().equals("ON_START")) {
                     Message initMessage = new Message();
@@ -46,7 +51,7 @@ public class ReceiveProtocol extends Thread {
 
                     SendProtocol.sendToConnectedClients(CLIENT_LIST, initMessage);
 
-                    if (CLIENT_LIST.size() == 2) {
+                    if (CLIENT_LIST.size() == 4) {
                         Message startMessage = new Message();
                         startMessage.setAction("START");
                         startMessage.setClientsIds(CLIENT_IDS);
@@ -54,12 +59,9 @@ public class ReceiveProtocol extends Thread {
                         SendProtocol.sendToConnectedClients(CLIENT_LIST, startMessage);
                     }
                 }
-                if (message.getAction().equals("MOVE")) {
-                    ServerActions.onMoveTank(CLIENT_LIST, message);
-                }
-                if (message.getAction().equals("DISCONNECT")) {
-                    ServerActions.onDisconnect(CLIENT_LIST, CLIENT_IDS, message.getClientId());
-                }
+
+                if (message.getAction().equals("SHOOT"))
+                    ServerActions.onShootTank(CLIENT_LIST, message);
             }
             br.close();
             pw.close();
