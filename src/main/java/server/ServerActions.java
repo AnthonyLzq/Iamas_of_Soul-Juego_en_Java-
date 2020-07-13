@@ -10,15 +10,21 @@ import java.util.List;
 public class ServerActions {
     public static void onDisconnect(List<BattleCityServerThread> clientList, List<String> clientIds, String clientId) {
         ClientChecker.removeFromClientList(clientId, clientList, clientIds);
+        int index = ClientChecker.removeFromClientList(clientId, clientList, clientIds);
 
         Message message = new Message();
         message.setClientId(clientId);
         message.setAction("DISCONNECT");
-
+        message.setPlayerIndex(index);
         SendProtocol.sendToConnectedClients(clientList, message);
     }
 
     public static void onMoveTank(List<BattleCityServerThread> clientList, Message message) {
         SendProtocol.sendToConnectedClients(clientList, message);
     }
+
+    public static void onShootTank(List<BattleCityServerThread> clientList, Message message) {
+        SendProtocol.sendToConnectedClients(clientList, message);
+    }
+
 }
