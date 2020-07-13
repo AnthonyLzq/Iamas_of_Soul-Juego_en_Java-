@@ -11,6 +11,7 @@ public class Message {
     private String action;
     private int posX;
     private int posY;
+    private int playerIndex;
 
     public Message() {
     }
@@ -35,10 +36,11 @@ public class Message {
         messageAsObject.setPosY(Integer.parseInt(attributes.get(2)));
         messageAsObject.setAction(attributes.get(3));
         messageAsObject.setOrientation(attributes.get(4));
+        messageAsObject.setPlayerIndex(Integer.parseInt(attributes.get(5)));
         messageAsObject.setClientsIds(
                 Arrays.asList(
                         attributes
-                                .get(5)
+                                .get(6)
                                 .replace("[", "")
                                 .replace("]", "")
                                 .replace(",", "")
@@ -50,9 +52,13 @@ public class Message {
         return messageAsObject;
     }
 
+    public void setPlayerIndex(int playerIndex) {
+        this.playerIndex = playerIndex;
+    }
+
     @Override
     public String toString() {
-        return clientId + "/" + posX + "/" + posY + "/" + action + "/" + orientation + "/" + clientsIds;
+        return clientId + "/" + posX + "/" + posY + "/" + action + "/" + orientation + "/" + playerIndex + "/" + clientsIds;
     }
 
     public String getClientId() {

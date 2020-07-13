@@ -19,20 +19,12 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private final Socket SOCKET;
     private final List<TankContainer> tankContainers = new ArrayList<TankContainer>();
     private final List<BulletContainer> bulletContainers = new ArrayList<BulletContainer>();
+    private final Dimension WINDOW_SIZE = new Dimension(500, 500);
+    private final AtomicBoolean PLAYER_SHOOT = new AtomicBoolean(false);
 
     private JButton startButton;
     private JLabel wait;
     private TankContainer tankContainer;
-    private BulletContainer bulletContainer;
-
-    private final Dimension WINDOW_SIZE = new Dimension(500, 500);
-    private final AtomicBoolean PLAYER_SHOOT = new AtomicBoolean(false);
-    private final AtomicBoolean[] PLAYERS_SHOT = {
-            new AtomicBoolean(false),
-            new AtomicBoolean(false),
-            new AtomicBoolean(false),
-            new AtomicBoolean(false),
-    };
 
     private String clientId;
 
@@ -40,13 +32,12 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
         SOCKET = socket;
     }
 
-
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
     public void newPlayer(int nPlayers, List<String> ids) {
-        int TOTAL_PLAYERS = 2;
+        int TOTAL_PLAYERS = 4;
         if (nPlayers == TOTAL_PLAYERS) {
             handleInitGame();
             initGame(ids);
@@ -56,6 +47,7 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     public void start() {
         setProperties();
         createTankContainers(tankContainers);
+        createBulletContainers(bulletContainers);
         startScreen();
     }
 
@@ -89,64 +81,82 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     private void waitScreen(int nPlayers) {
         startButton.setVisible(false);
         if (wait != null) wait.setVisible(false);
-        wait = new JLabel("Waiting for players: " + nPlayers + "/2");
+        wait = new JLabel("Waiting for players: " + nPlayers + "/4");
         add(wait);
         wait.setBounds(50, 50, 250, 30);
         wait.setVisible(true);
     }
 
     private void createTankContainers(List<TankContainer> tankContainers) {
-        tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
-        tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
+        for (int i = 0; i < 4; i++)
+            tankContainers.add(new TankContainer(getContentPane().getWidth(), getContentPane().getHeight(), SOCKET));
 
-        for (TankContainer tc : tankContainers) {
+        for (TankContainer tc: tankContainers)
             add(tc);
-        }
+    }
+
+    private void createBulletContainers(List<BulletContainer> bulletContainers) {
+        for (int i = 0; i < 4; i++)
+            bulletContainers.add(new BulletContainer(tankContainers, this, PLAYER_SHOOT));
+
+        for (BulletContainer bc: bulletContainers)
+            add(bc);
     }
 
     public void initGame(List<String> ids) {
-        // TODO: IMPLEMENT BULLETS
         int i = 0;
-        for (TankContainer tc : tankContainers) {
+        for (TankContainer tc: tankContainers) {
             tc.setTank(i, ids.get(i));
             i++;
-            if(tc.getId().equals(clientId)){
+            if (tc.getId().equals(clientId))
                 tankContainer = tc;
-            }
         }
     }
 
     public void setPosition(String id, String orientation, int x, int y) {
-        for (TankContainer tc : tankContainers){
-            if(tc.getId().equals(id)){
+        for (TankContainer tc: tankContainers)
+            if (tc.getId().equals(id))
                 tc.setTankLocation(x, y, orientation);
+    }
+
+    public void shootBulletInAllClients(String id, String orientation, int x, int y) {
+        int i = 0;
+        for (TankContainer tc: tankContainers) {
+            if (tc.getId().equals(id)) {
+                bulletContainers.get(i).shoot(orientation, x, y);
+                break;
             }
+            i++;
         }
     }
 
-    public void shootBulletInAllClients(String id) {
-    }
-
-    /*
-        public void shoot(String bulletDirection){
-            if(tankContainer.isVisible()) {
-                PLAYER_SHOOT.set(true);
-                switch (bulletDirection) {
-                    case "up":
-                        bulletContainer.shoot(bulletDirection, tankContainer.getX() + 21, tankContainer.getY() - 10);
-                        break;
-                    case "right":
-                        bulletContainer.shoot(bulletDirection,tankContainer.getX() + 50, tankContainer.getY() + 20);
-                        break;
-                    case "down":
-                        bulletContainer.shoot(bulletDirection,tankContainer.getX() + 21, tankContainer.getY() + 50);
-                        break;
-                    case "left":
-                        bulletContainer.shoot(bulletDirection,tankContainer.getX() - 10, tankContainer.getY() + 20);
-                }
+    public void shoot(String bulletDirection) {
+        Message message = new Message();
+        message.setAction("SHOOT");
+        message.setClientId(tankContainer.getId());
+        message.setOrientation(bulletDirection);
+        if (tankContainer.isVisible()) {
+            PLAYER_SHOOT.set(true);
+            switch (bulletDirection) {
+                case "up":
+                    message.setPosX(tankContainer.getX() + 21);
+                    message.setPosY(tankContainer.getY() - 10);
+                    break;
+                case "right":
+                    message.setPosX(tankContainer.getX() + 50);
+                    message.setPosY(tankContainer.getY() + 20);
+                    break;
+                case "down":
+                    message.setPosX(tankContainer.getX() + 21);
+                    message.setPosY(tankContainer.getY() + 50);
+                    break;
+                case "left":
+                    message.setPosX(tankContainer.getX() - 10);
+                    message.setPosY(tankContainer.getY() + 20);
             }
         }
-    */
+        SendProtocol.sendToServer(SOCKET, message);
+    }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
@@ -155,25 +165,29 @@ public class MainWindow extends JFrame implements ActionListener, KeyListener {
     public void keyTyped(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER)
             SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
-        // else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
-        else tankContainer.movement(e.getKeyCode());
+        else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get())
+            shoot(tankContainer.getOrientation());
+        else
+            tankContainer.movement(e.getKeyCode());
     }
 
     public void keyPressed(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER)
             SendProtocol.sendToServer(SOCKET, new Message("ON_START"));
-        // else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get()) shoot(tankContainer.getOrientation());
-        else tankContainer.movement(e.getKeyCode());
+        else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SPACE && !PLAYER_SHOOT.get())
+            shoot(tankContainer.getOrientation());
+        else
+            tankContainer.movement(e.getKeyCode());
     }
 
     public void keyReleased(java.awt.event.KeyEvent e) {
     }
 
     private void handleInitGame() {
-        if (wait != null) wait.setVisible(false);
+        if (wait != null)
+            wait.setVisible(false);
         startButton.setVisible(false);
-        for (TankContainer tc : tankContainers) {
+        for (TankContainer tc: tankContainers)
             tc.setVisible(true);
-        }
     }
 }

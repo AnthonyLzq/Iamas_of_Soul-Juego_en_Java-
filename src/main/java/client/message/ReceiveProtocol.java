@@ -35,7 +35,7 @@ public class ReceiveProtocol extends Thread {
                         );
                         break;
                     case "START":
-                        MAIN_WINDOW.newPlayer(2, messageFromServer.getClientsIds());
+                        MAIN_WINDOW.newPlayer(4, messageFromServer.getClientsIds());
                         break;
                     case "MOVE":
                         MAIN_WINDOW.setPosition(
@@ -46,7 +46,15 @@ public class ReceiveProtocol extends Thread {
                         );
                         break;
                     case "SHOOT":
-                        MAIN_WINDOW.shootBulletInAllClients(messageFromServer.getClientId());
+                        MAIN_WINDOW.shootBulletInAllClients(
+                                messageFromServer.getClientId(),
+                                messageFromServer.getOrientation(),
+                                messageFromServer.getPosX(),
+                                messageFromServer.getPosY()
+                        );
+                        break;
+                    case "DISCONNECT":
+                        // IMPLEMENT DISCONNECT
                 }
             }
         } catch (IOException e) {

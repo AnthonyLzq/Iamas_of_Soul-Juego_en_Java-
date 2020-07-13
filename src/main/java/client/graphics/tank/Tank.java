@@ -3,9 +3,9 @@ package client.graphics.tank;
 import javax.swing.ImageIcon;
 
 public class Tank {
-    private String spriteRoute = "./src/main/resources/sprites/player";
     private final int width;
     private final int height;
+    private String spriteRoute = "./src/main/resources/sprites/player";
     private ImageIcon image;
 
     public Tank(int code) {
