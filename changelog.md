@@ -1,5 +1,12 @@
 # Battle City - client side
 
+## Version 1.0.0
+- Implemented:
+  - Now 4 players can connect to the server to play.
+  - Tanks disappear once they got hit by a bullet.
+- Pending:
+  - Collisions between tanks.
+
 ## Version 0.5.0
 - Implemented:
   - Each client can move its own tank, assigned by its id.

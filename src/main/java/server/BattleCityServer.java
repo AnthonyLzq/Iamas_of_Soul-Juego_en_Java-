@@ -30,6 +30,5 @@ public class BattleCityServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

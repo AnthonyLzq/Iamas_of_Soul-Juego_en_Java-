@@ -10,10 +10,10 @@ import java.net.Socket;
 
 public class TankContainer extends JLabel {
     private final Socket SOCKET;
-    private Tank TANK;
-
     private final int FRAME_WIDTH;
     private final int FRAME_HEIGHT;
+
+    private Tank TANK;
     private String orientation;
     private String id;
 
@@ -101,16 +101,4 @@ public class TankContainer extends JLabel {
     }
 
     public String getId() { return id; }
-
-    @Override
-    public String toString() {
-        return "TankContainer{" +
-                "FRAME_WIDTH=" + FRAME_WIDTH +
-                ", FRAME_HEIGHT=" + FRAME_HEIGHT +
-                ", SOCKET=" + SOCKET +
-                ", TANK=" + TANK +
-                ", orientation='" + orientation + '\'' +
-                ", id='" + id + '\'' +
-                '}';
-    }
 }
